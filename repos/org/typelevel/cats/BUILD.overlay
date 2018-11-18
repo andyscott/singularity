@@ -1,0 +1,90 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl",
+    "scala_binary",
+    "scala_library",
+)
+load(
+    "@io_higherkindness_singularity//rules:scala_addendum.bzl",
+    "make_srcjar",
+)
+
+scala_library(
+    name = "kernel",
+    srcs = glob([
+        "kernel/src/main/scala/**/*.scala",
+        "kernel/src/main/scala-2.12-/**/*.scala",
+    ]) + [
+        ":kernel_boiler",
+    ],
+    plugins = [
+        "@kind_projector_2_12//jar",
+    ],
+    scalacopts = [
+        "-Ypartial-unification",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "core",
+    srcs = glob([
+        "core/src/main/scala/**/*.scala",
+        "core/src/main/scala-2.12-/**/*.scala",
+    ]) + [
+        ":core_boiler",
+    ],
+    plugins = [
+        "@kind_projector_2_12//jar",
+    ],
+    scalacopts = [
+        "-Ypartial-unification",
+    ],
+    visibility = ["//visibility:public"],
+    exports = [
+        ":kernel",
+    ],
+    deps = [
+        ":kernel",
+        ":macros",
+        "@org_typelevel_machinist//:default",
+    ],
+)
+
+scala_library(
+    name = "macros",
+    srcs = glob([
+        "macros/src/main/scala/**/*.scala",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_typelevel_machinist//:default",
+    ],
+)
+
+make_srcjar(
+    name = "kernel_boiler",
+    generator = ":kernel_boiler_bin",
+)
+
+make_srcjar(
+    name = "core_boiler",
+    generator = ":core_boiler_bin",
+)
+
+scala_binary(
+    name = "kernel_boiler_bin",
+    srcs = [
+        "KittyKernelBoiler.scala",
+        "project/KernelBoiler.scala",
+        "sbt.scala",
+    ],
+)
+
+scala_binary(
+    name = "core_boiler_bin",
+    srcs = [
+        "KittyCoreBoiler.scala",
+        "project/Boilerplate.scala",
+        "sbt.scala",
+    ],
+)

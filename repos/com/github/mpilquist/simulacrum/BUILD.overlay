@@ -1,0 +1,24 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl", 
+    "scala_library",
+)
+
+scala_library(
+    name = "core",
+    srcs = glob([
+        "core/src/main/scala/**/*.scala",        
+    ]),
+    macro = True,
+    scalacopts = [      
+        "-deprecation",
+        "-feature",
+        "-language:higherKinds",
+        "-language:implicitConversions",
+    ],
+    deps = [
+         "@org_typelevel_macro_compat//:core",
+         "@scala_scala_reflect//jar",
+         "@macro_paradise_2_12//jar",
+    ],
+    visibility = ["//visibility:public"],
+)

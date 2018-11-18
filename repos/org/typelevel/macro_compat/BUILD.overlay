@@ -1,0 +1,21 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl", 
+    "scala_library",
+)
+
+scala_library(
+    name = "core",
+    srcs = glob([
+        "core/src/main/scala_2.11+/**/*.scala",        
+    ]),
+    deps = [
+         "@scala_scala_reflect//jar",
+         "@macro_paradise_2_12//jar",
+    ],
+    exports = [
+         "@scala_scala_reflect//jar",
+         "@macro_paradise_2_12//jar",
+    ],
+    macro = True,
+    visibility = ["//visibility:public"],
+)
