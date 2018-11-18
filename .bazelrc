@@ -1,0 +1,19 @@
+common --color=yes
+
+build --define=scala_deps_direct=warn
+build --define=scala_deps_used=warn
+
+build --disk_cache=.bazel_cache
+build --experimental_strict_action_env
+build --javacopt="-source 8 -target 8"
+build --strategy=ScalaCompile=worker
+build --worker_max_instances=4
+build --worker_sandboxing
+build --verbose_failures
+
+test  --test_output=all
+
+build:ci --announce_rc
+build:ci --define=scala_deps_direct=error
+build:ci --define=scala_deps_used=error
+build:ci --worker_max_instances=2

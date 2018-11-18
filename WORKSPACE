@@ -16,7 +16,7 @@ http_archive(
 
 git_repository(
     name = "rules_scala_annex",
-    commit = "8bdb568547ddd5935ea2df39e311432c614d8508",
+    commit = "508c0d51f2ea4ef7af7084e39f465e2faa3a9d1a",
     remote = "git://github.com/andyscott/rules_scala_annex",
 )
 
@@ -30,11 +30,6 @@ scala_repository(
     "scala",
     ("org.scala-lang", "2.12.7"),
     "@compiler_bridge_2_12//:src",
-)
-
-maven_jar(
-    name = "kind_projector_2_12",
-    artifact = "org.spire-math:kind-projector_2.12:0.9.6",
 )
 
 load("//repos:org/scalamacros/paradise/repository.bzl", "org_scalamacros_paradise_repository")
@@ -56,3 +51,47 @@ org_typelevel_macro_compat_repository()
 load("//repos:com/github/mpilquist/simulacrum/repository.bzl", "com_github_mpilquist_simulacrum_repository")
 
 com_github_mpilquist_simulacrum_repository()
+
+# TODO area!
+# build these from source too
+
+maven_jar(
+    name = "kind_projector_2_12",
+    artifact = "org.spire-math:kind-projector_2.12:0.9.6",
+)
+
+maven_jar(
+    name = "junit",
+    artifact = "junit:junit:4.12",
+    sha1 = "2973d150c0dc1fefe998f834810d68f278ea58ec",
+)
+
+maven_jar(
+    name = "hamcrest_core",
+    artifact = "org.hamcrest:hamcrest-core:1.3",
+    sha1 = "42a25dc3219429f0e5d060061f71acb49bf010a0",
+)
+
+maven_jar(
+    name = "junit_interface",
+    artifact = "com.novocode:junit-interface:jar:0.11",
+    sha1 = "38bb853c93abfbe14a0514016f0f70dd73422d9f",
+)
+
+load("@rules_scala_annex//rules:external.bzl", "scala_maven_import_external")
+
+scala_maven_import_external(
+    name = "org_scalactic_scalactic",
+    artifact = "org.scalactic:scalactic_2.12:3.0.4",
+    jar_sha256 = "9b28aa46faaa666a8a10a5173fb72975d59c363c31c3e5f6a27eacc2e654cdfa",
+    licenses = ["notice"],
+    server_urls = ["http://central.maven.org/maven2/"],
+)
+
+scala_maven_import_external(
+    name = "org_scalatest_scalatest",
+    artifact = "org.scalatest:scalatest_2.12:3.0.4",
+    jar_sha256 = "cf2a7999681567e0f0e0166756356ae4ab0cd6c83f3f1d70225d25bb87d26070",
+    licenses = ["notice"],
+    server_urls = ["http://central.maven.org/maven2/"],
+)

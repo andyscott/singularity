@@ -8,7 +8,12 @@ load(
     "make_srcjar",
 )
 
-_scalacopts = [
+_cats_deps = [
+    "@com_github_mpilquist_simulacrum",
+    "@org_typelevel_machinist",
+]
+
+_cats_scalacopts = [
     "-encoding",
     "UTF-8",
     "-feature",
@@ -26,6 +31,11 @@ _scalacopts = [
     "-deprecation",
 ]
 
+_cats_plugins = [
+    "@kind_projector_2_12//jar",
+    "@org_scalamacros_paradise",
+]
+
 scala_library(
     name = "kernel",
     srcs = glob([
@@ -34,11 +44,11 @@ scala_library(
     ]) + [
         ":kernel_boiler",
     ],
-    plugins = [
-        "@kind_projector_2_12//jar",
-    ],
-    scalacopts = _scalacopts,
+    macro = True,
+    plugins = _cats_plugins,
+    scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],
+    deps = _cats_deps,
 )
 
 scala_library(
@@ -49,20 +59,16 @@ scala_library(
     ]) + [
         ":core_boiler",
     ],
-    plugins = [
-        "@kind_projector_2_12//jar",
-        "@org_scalamacros_paradise//:plugin",
-    ],
-    scalacopts = _scalacopts,
+    macro = True,
+    plugins = _cats_plugins,
+    scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],
     exports = [
         ":kernel",
     ],
-    deps = [
+    deps = _cats_deps + [
         ":kernel",
         ":macros",
-        "@com_github_mpilquist_simulacrum//:core",
-        "@org_typelevel_machinist//:core",
     ],
 )
 
@@ -72,11 +78,10 @@ scala_library(
         "macros/src/main/scala/**/*.scala",
     ]),
     macro = True,
-    scalacopts = _scalacopts,
+    plugins = _cats_plugins,
+    scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],
-    deps = [
-        "@org_typelevel_machinist//:core",
-    ],
+    deps = _cats_deps,
 )
 
 make_srcjar(

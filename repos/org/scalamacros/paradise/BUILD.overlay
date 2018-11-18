@@ -1,17 +1,49 @@
 load(
     "@rules_scala_annex//rules:scala.bzl", 
     "scala_library",
+    "scala_test",
 )
 
 scala_library(
-    name = "plugin",
+    name = "org_scalamacros_paradise",
     srcs = glob([
         "plugin/src/main/scala/**/*.scala",
     ]),
     deps = [
         "@scala_scala_compiler//jar",
         "@scala_scala_reflect//jar",
+    ],    
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "test_src",
+    srcs = glob([
+        "tests/src/main/scala/**/*.scala",
+    ]),
+    deps = [        
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
+    plugins = [
+        "@org_scalamacros_paradise",
     ],
     macro = True,
-    visibility = ["//visibility:public"],
+)
+
+scala_test(
+    name = "test",
+    srcs = glob([
+        "tests/src/test/scala/**/*.scala",
+    ], exclude = [
+        "tests/src/test/scala/annotations/neg/**/*.scala",
+    ]),
+    deps = [
+        ":test_src",        
+        "@org_scalactic_scalactic",
+        "@org_scalatest_scalatest",
+    ],
+    plugins = [
+        "@org_scalamacros_paradise",
+    ],
 )

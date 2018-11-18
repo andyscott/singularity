@@ -1,16 +1,59 @@
 load(
-    "@rules_scala_annex//rules:scala.bzl", 
+    "@rules_scala_annex//rules:scala.bzl",
     "scala_library",
+    "scala_test",
+)
+
+_common_scalacopts = [
+    "-feature",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-deprecation",
+]
+
+_common_deps = [
+    "@scala_scala_reflect//jar",
+    "@scala_scala_compiler//jar",
+]
+
+scala_library(
+    name = "org_typelevel_macro_compat",
+    srcs = glob([
+        "core/src/main/scala_2.11+/**/*.scala",
+    ]),
+    macro = True,
+    scalacopts = _common_scalacopts,
+    visibility = ["//visibility:public"],
+    deps = _common_deps,
 )
 
 scala_library(
-    name = "core",
+    name = "test_src",
     srcs = glob([
-        "core/src/main/scala_2.11+/**/*.scala",        
+        "test/src/main/scala/**/*.scala",
     ]),
-    deps = [
-         "@scala_scala_reflect//jar",
-    ],    
     macro = True,
+    scalacopts = _common_scalacopts,
     visibility = ["//visibility:public"],
+    deps = _common_deps + [
+        "@org_typelevel_macro_compat",
+    ],
+)
+
+scala_test(
+    name = "test",
+    srcs = glob([
+        "test/src/test/scala/**/*.scala",
+    ]),
+    scalacopts = _common_scalacopts,
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        "@junit_interface//jar",
+        "@hamcrest_core//jar",
+    ],
+    deps = _common_deps + [
+        ":test_src",
+        "@junit//jar",
+    ],
 )
