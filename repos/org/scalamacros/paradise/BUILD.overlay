@@ -4,13 +4,14 @@ load(
 )
 
 scala_library(
-    name = "core",
+    name = "plugin",
     srcs = glob([
-        "core/src/main/scala_2.11+/**/*.scala",        
+        "plugin/src/main/scala/**/*.scala",
     ]),
     deps = [
-         "@scala_scala_reflect//jar",
-    ],    
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
     macro = True,
     visibility = ["//visibility:public"],
 )

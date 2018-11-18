@@ -8,6 +8,24 @@ load(
     "make_srcjar",
 )
 
+_scalacopts = [
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-language:experimental.macros",
+    "-unchecked",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture",
+    "-Yno-adapted-args",
+    "-Xfatal-warnings",
+    "-deprecation",
+]
+
 scala_library(
     name = "kernel",
     srcs = glob([
@@ -19,9 +37,7 @@ scala_library(
     plugins = [
         "@kind_projector_2_12//jar",
     ],
-    scalacopts = [
-        "-Ypartial-unification",
-    ],
+    scalacopts = _scalacopts,
     visibility = ["//visibility:public"],
 )
 
@@ -35,10 +51,9 @@ scala_library(
     ],
     plugins = [
         "@kind_projector_2_12//jar",
+        "@org_scalamacros_paradise//:plugin",
     ],
-    scalacopts = [
-        "-Ypartial-unification",
-    ],
+    scalacopts = _scalacopts,
     visibility = ["//visibility:public"],
     exports = [
         ":kernel",
@@ -46,7 +61,8 @@ scala_library(
     deps = [
         ":kernel",
         ":macros",
-        "@org_typelevel_machinist//:default",
+        "@com_github_mpilquist_simulacrum//:core",
+        "@org_typelevel_machinist//:core",
     ],
 )
 
@@ -55,9 +71,11 @@ scala_library(
     srcs = glob([
         "macros/src/main/scala/**/*.scala",
     ]),
+    macro = True,
+    scalacopts = _scalacopts,
     visibility = ["//visibility:public"],
     deps = [
-        "@org_typelevel_machinist//:default",
+        "@org_typelevel_machinist//:core",
     ],
 )
 

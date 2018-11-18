@@ -6,19 +6,17 @@ load(
 scala_library(
     name = "core",
     srcs = glob([
-        "core/src/main/scala/**/*.scala",        
-    ]),
+        "core/src/main/scala/**/*.scala",
+    ]),    
+    deps = [        
+        "@org_typelevel_macro_compat//:core",
+    ],
     macro = True,
     scalacopts = [      
         "-deprecation",
         "-feature",
         "-language:higherKinds",
         "-language:implicitConversions",
-    ],
-    deps = [
-         "@org_typelevel_macro_compat//:core",
-         "@scala_scala_reflect//jar",
-         "@macro_paradise_2_12//jar",
-    ],
+    ],    
     visibility = ["//visibility:public"],
 )

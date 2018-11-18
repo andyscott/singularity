@@ -37,10 +37,9 @@ maven_jar(
     artifact = "org.spire-math:kind-projector_2.12:0.9.6",
 )
 
-maven_jar(
-    name = "macro_paradise_2_12",
-    artifact = "org.scalamacros:paradise_2.12.7:2.1.1",
-)
+load("//repos:org/scalamacros/paradise/repository.bzl", "org_scalamacros_paradise_repository")
+
+org_scalamacros_paradise_repository()
 
 load("//repos:org/typelevel/cats/repository.bzl", "org_typelevel_cats_repository")
 
