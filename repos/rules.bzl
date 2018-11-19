@@ -10,17 +10,14 @@ def _overlaid_github_repository_implementation(ctx):
     path = ctx.attr.path
 
     url = "https://github.com/%s/archive/%s.tar.gz" % (ctx.attr.repo, ctx.attr.sha)
-
+    print("L222")
     _execute(
         ctx,
         "wget -qO- \"%s\" | tar xvz --strip 1" % url,
         "ROOT=$(pwd)",
         "pushd $(dirname %s)/%s" % (repos_build, path),
-        "find . -name '*.overlay' -print | cpio -pavd $ROOT",
+        "find . -name '*' -print | cpio -pavd $ROOT",
         "popd",
-        "find . -name '*.overlay' -type f | while read NAME; do",
-        "  mv \"${NAME}\" \"${NAME%.overlay}\"",
-        "done",
     )
 
 overlaid_github_repository = repository_rule(
