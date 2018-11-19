@@ -9,12 +9,48 @@ load(
     "make_srcjar",
 )
 
-_gens = [
-    ["GenAnyVals",               "genMain",      "GenAnyVals.scala"],
-    ["GenEvery",                 "genMain",      "GenEvery.scala"],
-    ["GenColCompatHelper",       "genMain",      "GenColCompatHelper.scala"],
-    ["ScalacticGenResourcesJVM", "genResources", "GenResources.scala"],
+_scalactic_macro_gens = [
+    ["GenAnyVals",               "genMain",              "GenAnyVals.scala"],
+    ["GenEvery",                 "genMain",              "GenEvery.scala"],
+    ["GenColCompatHelper",       "genMain",              "GenColCompatHelper.scala"],
+    ["ScalacticGenResourcesJVM", "genResources",         "GenResources.scala"],
 ]
+
+_scalactic_gens = [
+    ["GenVersions",              "genScalacticVersions", "GenVersions.scala"],
+    ["ScalacticGenResourcesJVM", "genFailureMessages",   "GenResources.scala"],
+    ["GenArrayHelper",           "genMain",              "GenArrayHelper.scala"],
+]
+
+_scalactic_macro_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_macro_gens]
+_scalactic_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_gens]
+
+scala_library(
+    name = "scalactic_macro",
+    srcs = _scalactic_macro_srcjars + glob([
+        "scalactic-macro/src/main/scala/**/*.scala",
+    ]),
+    deps = [
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
+    macro = True,
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "scalactic",
+    srcs = _scalactic_srcjars + glob([
+        "scalactic/src/main/scala/**/*.scala",
+    ]),
+    deps = [
+        ":scalactic_macro",
+        "@org_scala_lang_modules_scala_xml//jar",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+_gens = _scalactic_macro_gens + _scalactic_gens
 
 _bridge_cmd = """
 cat > $@ << EOF
@@ -27,43 +63,30 @@ EOF
 """
 
 [genrule(
-    name = "%s_bridge" % object,
-    outs = ["%s_bridge.scala" % object],
+    name = "%s_%s_bridge" % (object, method),
+    outs = ["%s_%s_bridge.scala" % (object, method)],
     cmd = _bridge_cmd.format(object = object, method = method),
 ) for (object, method, _) in _gens]
 
 [scala_binary(
-    name = "%s_bin" % object,
+    name = "%s_%s_bin" % (object, method),
     srcs = [
         "project/%s" % file,
-        ":%s_bridge" % object,
+        ":%s_%s_bridge" % (object, method),
     ],
     deps = [
         "@antlr_stringtemplate//jar",
-        "@org_scala_lang_scala_parser_combinators//jar",
+        "@org_scala_lang_modules_scala_parser_combinators//jar",
     ],
     runtime_deps = [
         "@antlr//jar",
     ],
-) for (object, _, file) in _gens]
+) for (object, method, file) in _gens]
 
 [make_srcjar(
-    name = object,
-    generator = ":%s_bin" % object,
+    name = "%s_%s" % (object, method),
+    generator = ":%s_%s_bin" % (object, method),
     data = glob(["project/templates/*.template"]) + [
         "scalactic-macro/src/main/resources/org/scalactic/ScalacticBundle.properties"
     ],
-) for (object, _, _) in _gens]
-
-scala_library(
-    name = "scalactic_macro",
-    srcs = [":%s" % object for (object, _, _) in _gens] + glob([
-        "scalactic-macro/src/main/scala/**/*.scala",
-    ]),
-    deps = [
-        "@scala_scala_compiler//jar",
-        "@scala_scala_reflect//jar",
-    ],
-    macro = True,
-    visibility = ["//visibility:public"],
-)
+) for (object, method, _) in _gens]

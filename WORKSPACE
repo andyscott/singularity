@@ -95,9 +95,15 @@ maven_jar(
 )
 
 maven_jar(
-    name = "org_scala_lang_scala_parser_combinators",
+    name = "org_scala_lang_modules_scala_parser_combinators",
     artifact = "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1",
     sha1 = "29b4158f9ddcc22d1c81363fd61a8bef046f06b9",
+)
+
+maven_jar(
+    name = "org_scala_lang_modules_scala_xml",
+    artifact = "org.scala-lang.modules:scala-xml_2.12:1.1.1",
+    sha1 = "f56ecaf2e5b7138c87449303c763fd1654543fde",
 )
 
 load("@rules_scala_annex//rules:external.bzl", "scala_maven_import_external")
