@@ -43,6 +43,7 @@ scala_library(
 
 scala_test(
     name = "test",
+    size = "small",
     srcs = glob([
         "test/src/test/scala/**/*.scala",
     ]),

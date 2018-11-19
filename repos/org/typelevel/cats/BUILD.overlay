@@ -29,6 +29,7 @@ _cats_scalacopts = [
     "-Yno-adapted-args",
     "-Xfatal-warnings",
     "-deprecation",
+    "-Ypartial-unification",
 ]
 
 _cats_plugins = [
@@ -59,7 +60,6 @@ scala_library(
     ]) + [
         ":core_boiler",
     ],
-    macro = True,
     plugins = _cats_plugins,
     scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],

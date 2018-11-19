@@ -19,13 +19,16 @@ scala_library(
     deps = [        
         "@org_typelevel_macro_compat",
     ],
-    macro = True,
-    scalacopts = _scalacopts,    
+    scalacopts = _scalacopts,
+    plugins = [
+        "@org_scalamacros_paradise",
+    ],
+    macro = True,    
     visibility = ["//visibility:public"],
 )
 
 scala_library(
-    name = "test",
+    name = "test_compile",
     srcs = glob([
         "core/src/test/scala/**/*.scala",
     ]),    
@@ -36,7 +39,7 @@ scala_library(
     ],    
     scalacopts = _scalacopts,
     plugins = [
-        "@org_scalamacros_paradise//:org_scalamacros_paradise",
+        "@org_scalamacros_paradise",
     ],
     visibility = ["//visibility:public"],
 )

@@ -11,7 +11,9 @@ build --worker_max_instances=4
 build --worker_sandboxing
 build --verbose_failures
 
-test  --test_output=all
+test --test_output=all
+
+test:quick --test_size_filters=-large,-enormous
 
 build:ci --announce_rc
 build:ci --define=scala_deps_direct=error

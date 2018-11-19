@@ -4,11 +4,23 @@ load(
     "scala_test",
 )
 
+# a trick to slap the XML into the root of a new resource jar
+java_binary(
+   name = "resources",
+   create_executable = False,
+   classpath_resources = [
+        "plugin/src/main/scala/org/scalamacros/paradise/embedded/scalac-plugin.xml"
+   ],
+)
+
 scala_library(
     name = "org_scalamacros_paradise",
     srcs = glob([
         "plugin/src/main/scala/**/*.scala",
     ]),
+    resource_jars = [
+        ":resources"
+    ],    
     deps = [
         "@scala_scala_compiler//jar",
         "@scala_scala_reflect//jar",
@@ -33,6 +45,7 @@ scala_library(
 
 scala_test(
     name = "test",
+    size = "large",
     srcs = glob([
         "tests/src/test/scala/**/*.scala",
     ], exclude = [
