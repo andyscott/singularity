@@ -1,0 +1,42 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl",
+    "scala_binary",
+    "scala_library",
+)
+load(
+    "@io_higherkindness_singularity//rules:scala_addendum.bzl",
+    "make_srcjar",
+)
+
+_scalacopts = [
+    "-deprecation",
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Xfuture",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",
+    "-Ywarn-inaccessible",
+    "-Ywarn-nullary-override",
+    "-Ywarn-nullary-unit",
+    "-Ywarn-numeric-widen",
+    "-Xlint:-unused",
+    "-Ywarn-infer-any",
+    "-Ywarn-unused-import",
+    "-Ywarn-unused:-patvars,-implicits,-locals,-privates,-explicits",
+]
+
+scala_library(
+    name = "org_scalacheck_scalacheck",
+    srcs = glob([
+        "src/main/scala/**/*.scala",
+        "jvm/src/main/scala/**/*.scala",
+    ]),
+    scalacopts = _scalacopts,
+    visibility = ["//visibility:public"],
+    deps = [
+        "@scala_annex_org_scala_sbt_test_interface//jar",  # eep!
+    ],
+)

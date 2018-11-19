@@ -3,6 +3,7 @@ load("//repos:rules.bzl", "overlaid_github_repository")
 
 def singularity_scala_repositories():
     com_github_mpilquist_simulacrum_repository()
+    org_scalacheck_scalacheck_repository()
     org_scalamacros_paradise_repository()
     org_scalatest_scalatest_repository()
     org_typelevel_cats_repository()
@@ -18,6 +19,14 @@ def com_github_mpilquist_simulacrum_repository():
         path = "com/github/mpilquist/simulacrum",
         repo = "mpilquist/simulacrum",
         sha = "71021d1bba7c2181dba4358fa3b73785b1a2c273",
+    )
+
+def org_scalacheck_scalacheck_repository():
+    overlaid_github_repository(
+        name = "org_scalacheck_scalacheck",
+        path = "org/scalacheck/scalacheck",
+        repo = "rickynils/scalacheck",
+        sha = "7a83b03cb5df9b9cc4e10d3c0a75847f2c0c6b74",
     )
 
 def org_scalamacros_paradise_repository():
