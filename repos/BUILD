@@ -25,3 +25,13 @@ test_suite(
     name = "test",
     tests = _universe_test_labels,
 )
+
+load(":stats.bzl", "collect_srcs_test")
+
+collect_srcs_test(
+    name = "cloc",
+    deps = [
+        ":build",
+        ":test",
+    ],
+)

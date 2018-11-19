@@ -11,7 +11,6 @@ def _overlaid_github_repository_implementation(ctx):
 
     url = "https://github.com/%s/archive/%s.tar.gz" % (ctx.attr.repo, ctx.attr.sha)
 
-    print("FOOD")
     _execute(
         ctx,
         "wget -qO- \"%s\" | tar xvz --strip 1" % url,
