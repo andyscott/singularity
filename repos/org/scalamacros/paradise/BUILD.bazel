@@ -1,16 +1,16 @@
 load(
-    "@rules_scala_annex//rules:scala.bzl", 
+    "@rules_scala_annex//rules:scala.bzl",
     "scala_library",
     "scala_test",
 )
 
 # a trick to slap the XML into the root of a new resource jar
 java_binary(
-   name = "resources",
-   create_executable = False,
-   classpath_resources = [
-        "plugin/src/main/scala/org/scalamacros/paradise/embedded/scalac-plugin.xml"
-   ],
+    name = "resources",
+    classpath_resources = [
+        "plugin/src/main/scala/org/scalamacros/paradise/embedded/scalac-plugin.xml",
+    ],
+    create_executable = False,
 )
 
 scala_library(
@@ -19,13 +19,13 @@ scala_library(
         "plugin/src/main/scala/**/*.scala",
     ]),
     resource_jars = [
-        ":resources"
-    ],    
+        ":resources",
+    ],
+    visibility = ["//visibility:public"],
     deps = [
         "@scala_scala_compiler//jar",
         "@scala_scala_reflect//jar",
-    ],    
-    visibility = ["//visibility:public"],
+    ],
 )
 
 scala_library(
@@ -33,31 +33,34 @@ scala_library(
     srcs = glob([
         "tests/src/main/scala/**/*.scala",
     ]),
-    deps = [        
-        "@scala_scala_compiler//jar",
-        "@scala_scala_reflect//jar",
-    ],
+    macro = True,
     plugins = [
         "@org_scalamacros_paradise",
     ],
-    macro = True,
+    deps = [
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
 )
 
-scala_test(
+# these tests are slow, so just building them
+scala_library(
     name = "test",
-    size = "large",
-    srcs = glob([
-        "tests/src/test/scala/**/*.scala",
-    ], exclude = [
-        "tests/src/test/scala/annotations/neg/**/*.scala",
-    ]),
-    deps = [
-        ":test_src",        
-        "@org_scalactic_scalactic",
-        "@org_scalatest_scalatest",
-    ],
+    #size = "large",
+    srcs = glob(
+        [
+            "tests/src/test/scala/**/*.scala",
+        ],
+        exclude = [
+            "tests/src/test/scala/annotations/neg/**/*.scala",
+        ],
+    ),
     plugins = [
         "@org_scalamacros_paradise",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        ":test_src",
+        "@org_scalatest_scalatest",
+    ],
 )

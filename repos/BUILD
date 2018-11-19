@@ -3,13 +3,13 @@ load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 _universe_build_labels = [
     "@com_chuusai_shapeless",
     "@com_github_mpilquist_simulacrum",
-    "@com_github_mpilquist_simulacrum//:test_compile",
     "@io_circe_circe//:generic",
     "@io_circe_circe//:numbers",
     "@io_circe_circe//:shapes",
     "@org_scalacheck_scalacheck",
     "@org_scalamacros_paradise",
-    "@org_scalatest_scalatest_src//:scalactic",
+    "@org_scalamacros_paradise//:test",
+    "@org_scalatest_scalatest//:scalactic",
     "@org_spire_math_kind_projector",
     "@org_typelevel_cats//:core",
     "@org_typelevel_cats//:kernel",
@@ -25,9 +25,10 @@ filegroup(
 
 _universe_test_labels = [
     "@com_chuusai_shapeless//:test",
+    "@com_github_mpilquist_simulacrum//:test",
     "@org_spire_math_kind_projector//:test",
     "@org_typelevel_macro_compat//:test",
-    #"@org_scalamacros_paradise//:test",
+    "@org_scalatest_scalatest//:scalactic_test",
 ]
 
 test_suite(

@@ -27,8 +27,8 @@ scala_library(
     ],
 )
 
-scala_library(
-    name = "test_compile",
+scala_test(
+    name = "test",
     srcs = glob([
         "core/src/test/scala/**/*.scala",
     ]),
@@ -39,7 +39,6 @@ scala_library(
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_mpilquist_simulacrum",
-        "@org_scalactic_scalactic",
         "@org_scalatest_scalatest",
     ],
 )

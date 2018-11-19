@@ -58,7 +58,7 @@ def org_scalamacros_paradise_repository():
 
 def org_scalatest_scalatest_repository():
     overlaid_github_repository(
-        name = "org_scalatest_scalatest_src",
+        name = "org_scalatest_scalatest",
         path = "org/scalatest/scalatest",
         repo = "scalatest/scalatest",
         sha = "78e506537ed06d4438e1d365e18c160d46d2bf18",
@@ -108,22 +108,6 @@ def scala_binary_dependencies_must_burn():
         name = "org_scala_lang_modules_scala_xml",
         artifact = "org.scala-lang.modules:scala-xml_2.12:1.1.1",
         sha1 = "f56ecaf2e5b7138c87449303c763fd1654543fde",
-    )
-
-    scala_maven_import_external(
-        name = "org_scalactic_scalactic",
-        artifact = "org.scalactic:scalactic_2.12:3.0.4",
-        jar_sha256 = "9b28aa46faaa666a8a10a5173fb72975d59c363c31c3e5f6a27eacc2e654cdfa",
-        licenses = ["notice"],
-        server_urls = ["http://central.maven.org/maven2/"],
-    )
-
-    scala_maven_import_external(
-        name = "org_scalatest_scalatest",
-        artifact = "org.scalatest:scalatest_2.12:3.0.4",
-        jar_sha256 = "cf2a7999681567e0f0e0166756356ae4ab0cd6c83f3f1d70225d25bb87d26070",
-        licenses = ["notice"],
-        server_urls = ["http://central.maven.org/maven2/"],
     )
 
 def java_binary_dependencies_might_burn():

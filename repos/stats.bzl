@@ -40,6 +40,7 @@ def _collect_srcs_rule_impl(ctx):
         if src.extension in ["srcjar", "jar"]:
             # take advantage of the fact that cloc will
             # look into .zip files automatically
+            # update: not sure if this is actually working!
             srcjar = ctx.actions.declare_file("%s_%s.zip" % (hash(src.short_path), src.basename))
             ctx.actions.run_shell(
                 inputs = [src],
@@ -50,11 +51,14 @@ def _collect_srcs_rule_impl(ctx):
         else:
             inputs = inputs + [src]
 
+    file = ctx.actions.declare_file("source_file_list.txt")
+    ctx.actions.write(file, "\n".join([f.path for f in inputs]))
+
     ctx.actions.run_shell(
-        inputs = inputs,
+        inputs = inputs + [file],
         outputs = [ctx.outputs.out],
         progress_message = "Counting lines of code...",
-        command = "cloc %s > %s" % (" ".join([f.path for f in inputs]), ctx.outputs.out.path),
+        command = "cloc --list-file=%s > %s" % (file.path, ctx.outputs.out.path),
     )
 
     ctx.actions.write(ctx.outputs.executable, "cat %s" % ctx.outputs.out.short_path, True)

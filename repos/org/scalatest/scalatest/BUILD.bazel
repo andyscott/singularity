@@ -2,40 +2,187 @@ load(
     "@rules_scala_annex//rules:scala.bzl",
     "scala_binary",
     "scala_library",
+    "scala_test",
 )
-
 load(
     "@io_higherkindness_singularity//rules:scala_addendum.bzl",
     "make_srcjar",
 )
 
-_scalactic_macro_gens = [
-    ["GenAnyVals",               "genMain",              "GenAnyVals.scala"],
-    ["GenEvery",                 "genMain",              "GenEvery.scala"],
-    ["GenColCompatHelper",       "genMain",              "GenColCompatHelper.scala"],
-    ["ScalacticGenResourcesJVM", "genResources",         "GenResources.scala"],
+_scalatest_gens = [
+    [
+        "GenGen",
+        "genMain",
+        "GenGen.scala",
+    ],
+    [
+        "GenScalaCheckGen",
+        "genMain",
+        "GenScalaCheckGen.scala",
+    ],
+    [
+        "GenTable",
+        "genMain",
+        "GenTable.scala",
+    ],
+    [
+        "GenMatchers",
+        "genMain",
+        "GenMatchers.scala",
+    ],
+    [
+        "GenFactories",
+        "genMain",
+        "GenFactories.scala",
+    ],
+    [
+        "GenCompatibleClasses",
+        "genMain",
+        "GenCompatibleClasses.scala",
+    ],
+    [
+        "GenVersions",
+        "genScalaTestVersions",
+        "GenVersions.scala",
+    ],
+    [
+        "ScalaTestGenResourcesJVM",
+        "genResources",
+        "GenResources.scala",
+    ],
+    [
+        "ScalaTestGenResourcesJVM",
+        "genFailureMessages",
+        "GenResources.scala",
+    ],
+    [
+        "GenConfigMap",
+        "genMain",
+        "GenConfigMap.scala",
+    ],
 ]
 
 _scalactic_gens = [
-    ["GenVersions",              "genScalacticVersions", "GenVersions.scala"],
-    ["ScalacticGenResourcesJVM", "genFailureMessages",   "GenResources.scala"],
-    ["GenArrayHelper",           "genMain",              "GenArrayHelper.scala"],
+    [
+        "GenVersions",
+        "genScalacticVersions",
+        "GenVersions.scala",
+    ],
+    [
+        "ScalacticGenResourcesJVM",
+        "genFailureMessages",
+        "GenResources.scala",
+    ],
+    [
+        "GenArrayHelper",
+        "genMain",
+        "GenArrayHelper.scala",
+    ],
 ]
 
-_scalactic_macro_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_macro_gens]
+_scalactic_macro_gens = [
+    [
+        "GenAnyVals",
+        "genMain",
+        "GenAnyVals.scala",
+    ],
+    [
+        "GenEvery",
+        "genMain",
+        "GenEvery.scala",
+    ],
+    [
+        "GenColCompatHelper",
+        "genMain",
+        "GenColCompatHelper.scala",
+    ],
+    [
+        "ScalacticGenResourcesJVM",
+        "genResources",
+        "GenResources.scala",
+    ],
+]
+
+_scalactic_test_gens = [
+    [
+        "GenAnyVals",
+        "genTest",
+        "GenAnyVals.scala",
+    ],
+]
+
+_common_test_gens = [
+    [
+        "GenCompatibleClasses",
+        "genTest",
+        "GenCompatibleClasses.scala",
+    ],
+]
+
+_scalatest_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalatest_gens]
+
 _scalactic_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_gens]
 
+_scalactic_macro_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_macro_gens]
+
+_scalactic_test_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_test_gens]
+
+_common_test_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _common_test_gens]
+
+_gens = _scalatest_gens + _scalactic_gens + _scalactic_macro_gens + _scalactic_test_gens + _common_test_gens
+
+alias(
+    name = "org_scalatest_scalatest",
+    actual = ":scalatest",
+    visibility = ["//visibility:public"],
+)
+
 scala_library(
-    name = "scalactic_macro",
-    srcs = _scalactic_macro_srcjars + glob([
-        "scalactic-macro/src/main/scala/**/*.scala",
-    ]),
-    deps = [
-        "@scala_scala_compiler//jar",
-        "@scala_scala_reflect//jar",
+    name = "scalatest",
+    srcs = _scalatest_srcjars + glob(
+        [
+            "scalatest/src/main/scala/**/*.scala",
+            "scalatest/src/main/java/**/*.java",
+        ],
+        exclude = [
+            "scalatest/src/main/scala/org/scalatest/easymock/**",
+            "scalatest/src/main/scala/org/scalatest/jmock/**",
+            "scalatest/src/main/scala/org/scalatest/mock/**",
+            "scalatest/src/main/scala/org/scalatest/mockito/**",
+            "scalatest/src/main/scala/org/scalatest/selenium/**",
+            "scalatest/src/main/scala/org/scalatest/testng/**",
+        ],
+    ) + [
+        "go_away_testng.scala",
     ],
     macro = True,
+    resource_jars = [
+        ":scalatest_resources",
+    ],
     visibility = ["//visibility:public"],
+    exports = [
+        ":scalactic",
+    ],
+    deps = [
+        ":fake_deps",
+        ":scalactic",
+        ":scalactic_macro",
+        "@junit//jar",
+        "@org_scalacheck_scalacheck",
+    ],
+)
+
+java_library(
+    name = "scalatest_resources",
+    resources = glob([
+        "scalatest/src/main/resources/**/*",
+    ]),
+)
+
+scala_library(
+    name = "fake_deps",
+    srcs = glob(["fake_deps/**/*.scala"]),
+    neverlink = True,
 )
 
 scala_library(
@@ -43,18 +190,67 @@ scala_library(
     srcs = _scalactic_srcjars + glob([
         "scalactic/src/main/scala/**/*.scala",
     ]),
+    macro = True,
+    visibility = ["//visibility:public"],
     deps = [
         ":scalactic_macro",
         "@org_scala_lang_modules_scala_xml//jar",
     ],
-    visibility = ["//visibility:public"],
 )
 
-_gens = _scalactic_macro_gens + _scalactic_gens
+scala_test(
+    name = "scalactic_test",
+    srcs = _scalactic_test_srcjars + glob([
+        "scalactic-test/src/test/scala/**/*.scala",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        ":common_test",
+        ":scalactic",
+        ":scalatest",
+    ],
+)
+
+scala_library(
+    name = "scalactic_macro",
+    srcs = _scalactic_macro_srcjars + glob([
+        "scalactic-macro/src/main/scala/**/*.scala",
+    ]),
+    macro = True,
+    resource_jars = [
+        ":scalactic_macro_resources",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
+)
+
+java_library(
+    name = "scalactic_macro_resources",
+    resources = glob([
+        "scalactic-macro/src/main/resources/**/*",
+    ]),
+)
+
+scala_library(
+    name = "common_test",
+    srcs = _common_test_srcjars + glob([
+        "common-test/src/main/scala/**/*.scala",
+    ]),
+    macro = True,
+    visibility = ["//visibility:public"],
+    deps = [
+        ":scalactic_macro",
+        ":scalatest",
+        "@org_scala_lang_modules_scala_parser_combinators//jar",
+    ],
+)
 
 _bridge_cmd = """
 cat > $@ << EOF
-object {object}_bridge {{
+object {object}_{method}_bridge {{
   def main(args: Array[String]): Unit = {{
     {object}.{method}(new java.io.File("."), "3.1.x", "2.12.7")
   }}
@@ -65,7 +261,10 @@ EOF
 [genrule(
     name = "%s_%s_bridge" % (object, method),
     outs = ["%s_%s_bridge.scala" % (object, method)],
-    cmd = _bridge_cmd.format(object = object, method = method),
+    cmd = _bridge_cmd.format(
+        object = object,
+        method = method,
+    ),
 ) for (object, method, _) in _gens]
 
 [scala_binary(
@@ -74,19 +273,22 @@ EOF
         "project/%s" % file,
         ":%s_%s_bridge" % (object, method),
     ],
+    main_class = "%s_%s_bridge" % (object, method),
+    runtime_deps = [
+        "@antlr//jar",
+    ],
     deps = [
         "@antlr_stringtemplate//jar",
         "@org_scala_lang_modules_scala_parser_combinators//jar",
-    ],
-    runtime_deps = [
-        "@antlr//jar",
     ],
 ) for (object, method, file) in _gens]
 
 [make_srcjar(
     name = "%s_%s" % (object, method),
-    generator = ":%s_%s_bin" % (object, method),
     data = glob(["project/templates/*.template"]) + [
-        "scalactic-macro/src/main/resources/org/scalactic/ScalacticBundle.properties"
+        "scalactic-macro/src/main/resources/org/scalactic/ScalacticBundle.properties",
+        "scalatest/src/main/resources/org/scalatest/ScalaTestBundle.properties",
+        "scalatest/src/main/scala/org/scalatest/Matchers.scala",
     ],
+    generator = ":%s_%s_bin" % (object, method),
 ) for (object, method, _) in _gens]
