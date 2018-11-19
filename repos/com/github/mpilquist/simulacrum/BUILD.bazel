@@ -1,5 +1,5 @@
 load(
-    "@rules_scala_annex//rules:scala.bzl", 
+    "@rules_scala_annex//rules:scala.bzl",
     "scala_library",
     "scala_test",
 )
@@ -15,31 +15,31 @@ scala_library(
     name = "com_github_mpilquist_simulacrum",
     srcs = glob([
         "core/src/main/scala/**/*.scala",
-    ]),    
-    deps = [        
-        "@org_typelevel_macro_compat",
-    ],
-    scalacopts = _scalacopts,
+    ]),
+    macro = True,
     plugins = [
         "@org_scalamacros_paradise",
     ],
-    macro = True,    
+    scalacopts = _scalacopts,
     visibility = ["//visibility:public"],
+    deps = [
+        "@org_typelevel_macro_compat",
+    ],
 )
 
 scala_library(
     name = "test_compile",
     srcs = glob([
         "core/src/test/scala/**/*.scala",
-    ]),    
+    ]),
+    plugins = [
+        "@org_scalamacros_paradise",
+    ],
+    scalacopts = _scalacopts,
+    visibility = ["//visibility:public"],
     deps = [
         "@com_github_mpilquist_simulacrum",
         "@org_scalactic_scalactic",
         "@org_scalatest_scalatest",
-    ],    
-    scalacopts = _scalacopts,
-    plugins = [
-        "@org_scalamacros_paradise",
     ],
-    visibility = ["//visibility:public"],
 )
