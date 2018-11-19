@@ -10,7 +10,7 @@ def _overlaid_github_repository_implementation(ctx):
     path = ctx.attr.path
 
     url = "https://github.com/%s/archive/%s.tar.gz" % (ctx.attr.repo, ctx.attr.sha)
-
+    print("23")
     _execute(
         ctx,
         "wget -qO- \"%s\" | tar xvz --strip 1" % url,

@@ -10,10 +10,10 @@ load(
 )
 
 _scalactic_macro_gens = [
-    ["GenAnyVals",               "genMain",              "GenAnyVals.scala"],
-    ["GenEvery",                 "genMain",              "GenEvery.scala"],
-    ["GenColCompatHelper",       "genMain",              "GenColCompatHelper.scala"],
-    ["ScalacticGenResourcesJVM", "genResources",         "GenResources.scala"],
+    ["GenAnyVals",               "genMain",      "GenAnyVals.scala"],
+    ["GenEvery",                 "genMain",      "GenEvery.scala"],
+    ["GenColCompatHelper",       "genMain",      "GenColCompatHelper.scala"],
+    ["ScalacticGenResourcesJVM", "genResources", "GenResources.scala"],
 ]
 
 _scalactic_gens = [
@@ -22,8 +22,52 @@ _scalactic_gens = [
     ["GenArrayHelper",           "genMain",              "GenArrayHelper.scala"],
 ]
 
+_scalatest_gens = [
+    ["GenGen",                    "genMain",              "GenGen.scala"],
+    ["GenScalaCheckGen",          "genMain",              "GenScalaCheckGen.scala"],
+    ["GenTable",                  "genMain",              "GenTable.scala"],
+    ["GenMatchers",               "genMain",              "GenMatchers.scala"],
+    ["GenFactories",              "genMain",              "GenFactories.scala"],
+    ["GenCompatibleClasses",      "genMain",              "GenCompatibleClasses.scala"],
+    ["GenVersions",               "genScalaTestVersions", "GenVersions.scala"],
+    ["ScalaTestGenResourcesJVM",  "genResources",         "GenResources.scala"],
+    ["ScalaTestGenResourcesJVM",  "genFailureMessages",   "GenResources.scala"],
+    ["GenConfigMap",              "genMain",              "GenConfigMap.scala"],
+]
+
 _scalactic_macro_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_macro_gens]
 _scalactic_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalactic_gens]
+_scalatest_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _scalatest_gens]
+
+scala_library(
+    name = "org_scalatest_scalatest",
+    srcs = _scalatest_srcjars + glob([
+        "scalatest/src/main/scala/**/*.scala",
+    ]),
+    deps = [
+        ":scalactic",
+        ":scalactic_macro",
+        "@org_scalacheck_scalacheck",
+        "@junit//jar",
+    ],
+    exports = [
+        ":scalactic",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "scalactic",
+    srcs = _scalactic_srcjars + glob([
+        "scalactic/src/main/scala/**/*.scala",
+    ]),
+    deps = [
+        ":scalactic_macro",
+        "@org_scala_lang_modules_scala_xml//jar",
+    ],
+    macro = True,
+    visibility = ["//visibility:public"],
+)
 
 scala_library(
     name = "scalactic_macro",
@@ -38,23 +82,11 @@ scala_library(
     visibility = ["//visibility:public"],
 )
 
-scala_library(
-    name = "scalactic",
-    srcs = _scalactic_srcjars + glob([
-        "scalactic/src/main/scala/**/*.scala",
-    ]),
-    deps = [
-        ":scalactic_macro",
-        "@org_scala_lang_modules_scala_xml//jar",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-_gens = _scalactic_macro_gens + _scalactic_gens
+_gens = _scalactic_macro_gens + _scalactic_gens + _scalatest_gens
 
 _bridge_cmd = """
 cat > $@ << EOF
-object {object}_bridge {{
+object {object}_{method}_bridge {{
   def main(args: Array[String]): Unit = {{
     {object}.{method}(new java.io.File("."), "3.1.x", "2.12.7")
   }}
@@ -70,6 +102,7 @@ EOF
 
 [scala_binary(
     name = "%s_%s_bin" % (object, method),
+    main_class = "%s_%s_bridge" % (object, method),
     srcs = [
         "project/%s" % file,
         ":%s_%s_bridge" % (object, method),
@@ -87,6 +120,7 @@ EOF
     name = "%s_%s" % (object, method),
     generator = ":%s_%s_bin" % (object, method),
     data = glob(["project/templates/*.template"]) + [
-        "scalactic-macro/src/main/resources/org/scalactic/ScalacticBundle.properties"
+        "scalactic-macro/src/main/resources/org/scalactic/ScalacticBundle.properties",
+        "scalatest/src/main/resources/org/scalatest/ScalaTestBundle.properties",
     ],
 ) for (object, method, _) in _gens]
