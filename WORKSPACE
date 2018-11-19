@@ -52,6 +52,10 @@ load("//repos:com/github/mpilquist/simulacrum/repository.bzl", "com_github_mpilq
 
 com_github_mpilquist_simulacrum_repository()
 
+load("//repos:org/scalatest/scalatest/repository.bzl", "org_scalatest_scalatest_repository")
+
+org_scalatest_scalatest_repository()
+
 # TODO area!
 # build these from source too
 
@@ -76,6 +80,24 @@ maven_jar(
     name = "junit_interface",
     artifact = "com.novocode:junit-interface:jar:0.11",
     sha1 = "38bb853c93abfbe14a0514016f0f70dd73422d9f",
+)
+
+maven_jar(
+    name = "antlr",
+    artifact = "antlr:antlr:2.7.7",
+    sha1 = "83cd2cd674a217ade95a4bb83a8a14f351f48bd0",
+)
+
+maven_jar(
+    name = "antlr_stringtemplate",
+    artifact = "org.antlr:stringtemplate:3.2",
+    sha1 = "6fe2e3bb57daebd1555494818909f9664376dd6c",
+)
+
+maven_jar(
+    name = "org_scala_lang_scala_parser_combinators",
+    artifact = "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1",
+    sha1 = "29b4158f9ddcc22d1c81363fd61a8bef046f06b9",
 )
 
 load("@rules_scala_annex//rules:external.bzl", "scala_maven_import_external")

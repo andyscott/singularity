@@ -59,4 +59,5 @@ scala_test(
     plugins = [
         "@org_scalamacros_paradise",
     ],
+    visibility = ["//visibility:public"],
 )

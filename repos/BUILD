@@ -3,12 +3,13 @@ load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 _universe_build_labels = [
     "@com_github_mpilquist_simulacrum",
     "@com_github_mpilquist_simulacrum//:test_compile",
-    "@org_typelevel_cats//:kernel",
+    "@org_scalamacros_paradise",
+    "@org_scalatest_scalatest_src//:scalactic_macro",
     "@org_typelevel_cats//:core",
+    "@org_typelevel_cats//:kernel",
     "@org_typelevel_machinist",
     "@org_typelevel_machinist//:example",
     "@org_typelevel_macro_compat",
-    "@org_scalamacros_paradise",
 ]
 
 filegroup(
