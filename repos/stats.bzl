@@ -32,15 +32,29 @@ def _collect_srcs_rule_impl(ctx):
     srcs = []
     if hasattr(ctx.attr, "deps"):
         for dep in ctx.attr.deps:
-            srcs = srcs + [src for src in dep[CollectedSrcs].srcs]
+            srcs = srcs + [f for f in dep[CollectedSrcs].srcs]
 
-    # TODO: we should unzip srcjars so they are counted!
+    inputs = []
+
+    for src in srcs:
+        if src.extension in ["srcjar", "jar"]:
+            # take advantage of the fact that cloc will
+            # look into .zip files automatically
+            srcjar = ctx.actions.declare_file("%s.zip" % src.basename)
+            ctx.actions.run_shell(
+                inputs = [src],
+                outputs = [srcjar],
+                command = "cp %s %s" % (src.path, srcjar.path),
+            )
+            inputs = inputs + [srcjar]
+        else:
+            inputs = inputs + [src]
 
     ctx.actions.run_shell(
-        inputs = srcs,
+        inputs = inputs,
         outputs = [ctx.outputs.out],
-        progress_message = "Wooting",
-        command = "cloc %s > %s" % (" ".join([src.path for src in srcs]), ctx.outputs.out.path),
+        progress_message = "Counting lines of code...",
+        command = "cloc %s > %s" % (" ".join([f.path for f in inputs]), ctx.outputs.out.path),
     )
 
     ctx.actions.write(ctx.outputs.executable, "cat %s" % ctx.outputs.out.short_path, True)
