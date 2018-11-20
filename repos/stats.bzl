@@ -40,7 +40,7 @@ def _collect_srcs_rule_impl(ctx):
         if src.extension in ["srcjar", "jar"]:
             # take advantage of the fact that cloc will
             # look into .zip files automatically
-            srcjar = ctx.actions.declare_file("%s.zip" % src.basename)
+            srcjar = ctx.actions.declare_file("%s_%s.zip" % (hash(src.short_path), src.basename))
             ctx.actions.run_shell(
                 inputs = [src],
                 outputs = [srcjar],

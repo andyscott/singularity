@@ -4,6 +4,7 @@ load("//repos:rules.bzl", "overlaid_github_repository")
 def singularity_scala_repositories():
     com_chuusai_shapeless_repository()
     com_github_mpilquist_simulacrum_repository()
+    io_circe_circe_repository()
     org_scalacheck_scalacheck_repository()
     org_scalamacros_paradise_repository()
     org_scalatest_scalatest_repository()
@@ -28,6 +29,14 @@ def com_github_mpilquist_simulacrum_repository():
         path = "com/github/mpilquist/simulacrum",
         repo = "mpilquist/simulacrum",
         sha = "71021d1bba7c2181dba4358fa3b73785b1a2c273",
+    )
+
+def io_circe_circe_repository():
+    overlaid_github_repository(
+        name = "io_circe_circe",
+        path = "io/circe/circe",
+        repo = "circe/circe",
+        sha = "686bb1043ec5b3250c63f059fa978f9560dd24a8",
     )
 
 def org_scalacheck_scalacheck_repository():

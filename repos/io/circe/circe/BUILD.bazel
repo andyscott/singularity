@@ -1,0 +1,135 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl",
+    "scala_binary",
+    "scala_library",
+    "scala_test",
+)
+load(
+    "@io_higherkindness_singularity//rules:scala_addendum.bzl",
+    "make_srcjar",
+)
+
+_scalacopts = [
+    "-deprecation",
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-unchecked",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Xfuture",
+    "-Yno-predef",
+    "-Ywarn-unused-import",
+]
+
+scala_library(
+    name = "generic",
+    srcs = glob([
+        "modules/generic/shared/src/main/scala/**/*.scala",
+        "modules/generic/shared/src/main/scala-2.12-/**/*.scala",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        ":core",
+        "@com_chuusai_shapeless",
+    ],
+    macro = True,
+)
+
+scala_library(
+    name = "shapes",
+    srcs = glob([
+        "modules/shapes/shared/src/main/scala/**/*.scala",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        ":core",
+        "@com_chuusai_shapeless",
+    ],
+    macro = True,
+)
+
+scala_library(
+    name = "core",
+    srcs = glob([
+        "modules/core/shared/src/main/scala/**/*.scala",
+        "modules/core/shared/src/main/scala-2.12-/**/*.scala",
+        "modules/core/shared/src/main/scala-with-jdk8/**/*.scala",
+    ]) + [
+        ":boilerplate",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":numbers",
+        "@org_typelevel_cats//:core",
+    ],
+)
+
+scala_library(
+    name = "numbers",
+    srcs = glob([
+        "modules/numbers/shared/src/main/scala/**/*.scala",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+_sbt_shim_cmd = """
+cat > $@ << EOF
+package sbt
+
+import java.nio.file.Files
+import java.nio.charset.StandardCharsets
+
+object \`package\` {
+  type File = java.io.File
+  implicit final class FileOps(val file: File) extends AnyVal {
+    def /(next: String): File = new File(file, next)
+  }
+}
+
+object IO {
+  def write(file: File, content: String): Unit = {
+    file.getParentFile.mkdirs()
+    Files.write(file.toPath, content.getBytes(StandardCharsets.UTF_8))
+  }
+}
+EOF
+"""
+
+_boilerplate_shim_cmd = """
+cat > $@ << EOF
+import java.io.File
+
+object Boilerplate_bridge {
+  def main(args: Array[String]): Unit =
+    Boilerplate.gen(new File(args.headOption getOrElse "."))
+}
+"""
+
+genrule(
+    name = "sbt_shim",
+    outs = ["sbt_shim.scala"],
+    cmd = _sbt_shim_cmd,
+)
+
+genrule(
+    name = "boilerplate_bridge",
+    outs = ["boilerplate_bridge.scala"],
+    cmd = _boilerplate_shim_cmd,
+)
+
+scala_binary(
+    name = "boilerplate_bin",
+    srcs = [
+        "project/Boilerplate.scala",
+        ":boilerplate_bridge",
+        ":sbt_shim",
+    ],
+)
+
+make_srcjar(
+    name = "boilerplate",
+    generator = ":boilerplate_bin",
+)
