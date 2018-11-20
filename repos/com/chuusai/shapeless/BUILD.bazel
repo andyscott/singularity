@@ -1,0 +1,106 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl",
+    "scala_binary",
+    "scala_library",
+    "scala_test",
+)
+load(
+    "@io_higherkindness_singularity//rules:scala_addendum.bzl",
+    "make_srcjar",
+)
+
+scala_library(
+    name = "com_chuusai_shapeless",
+    srcs = glob([
+        "core/src/main/scala/**/*.scala",
+        "core/src/main/scala_2.11+/**/*.scala",
+        "core/src/main/scala_2.13-/**/*.scala",
+    ]) + [
+        ":boilerplate",
+    ],
+    macro = True,
+    visibility = ["//visibility:public"],
+    deps = [
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
+)
+
+scala_test(
+    name = "test",
+    srcs = glob([
+        "core/src/test/scala/**/*.scala",
+        "core/src/test/scala_2.11+/**/*.scala",
+        "core/jvm/src/test/scala/**/*.scala",
+        "core/jvm/src/test/scala_2.11+/**/*.scala",
+        "core/jvm/src/test/scala_2.13-/**/*.scala",
+    ]),
+    deps = [
+        "@com_chuusai_shapeless",
+        "@junit//jar",
+    ],
+    runtime_deps = [
+        "@junit_interface//jar",
+        "@hamcrest_core//jar",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+_sbt_shim_cmd = """
+cat > $@ << EOF
+package sbt
+
+import java.nio.file.Files
+import java.nio.charset.StandardCharsets
+
+object \`package\` {
+  type File = java.io.File
+  implicit final class FileOps(val file: File) extends AnyVal {
+    def /(next: String): File = new File(file, next)
+  }
+}
+
+object IO {
+  def write(file: File, content: String): Unit = {
+    file.getParentFile.mkdirs()
+    Files.write(file.toPath, content.getBytes(StandardCharsets.UTF_8))
+  }
+}
+EOF
+"""
+
+_boilerplate_shim_cmd = """
+cat > $@ << EOF
+import java.io.File
+
+object Boilerplate_bridge {
+  def main(args: Array[String]): Unit =
+    Boilerplate.gen(new File(args.headOption getOrElse "."))
+}
+"""
+
+genrule(
+    name = "sbt_shim",
+    outs = ["sbt_shim.scala"],
+    cmd = _sbt_shim_cmd,
+)
+
+genrule(
+    name = "boilerplate_bridge",
+    outs = ["boilerplate_bridge.scala"],
+    cmd = _boilerplate_shim_cmd,
+)
+
+scala_binary(
+    name = "boilerplate_bin",
+    srcs = [
+        "project/Boilerplate.scala",
+        ":boilerplate_bridge",
+        ":sbt_shim",
+    ],
+)
+
+make_srcjar(
+    name = "boilerplate",
+    generator = ":boilerplate_bin",
+)

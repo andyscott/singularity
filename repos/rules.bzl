@@ -13,11 +13,19 @@ def _overlaid_github_repository_implementation(ctx):
 
     _execute(
         ctx,
-        "wget -qO- \"%s\" | tar xvz --strip 1" % url,
+        "SW=$(dirname $(dirname %s))" % repos_build,
+        "dir=\"$SW/.github_cache/%s\"" % ctx.attr.repo,
+        "file=\"$dir/%s.tar.gz\"" % ctx.attr.sha,
+        "mkdir -p \"$dir\"",
+        "if [ ! -f \"$file\" ]; then",
+        "  wget -qO- \"%s\" > \"$file\"" % url,
+        "fi",
+        "cat \"$file\" | tar xvz --strip 1",
         "ROOT=$(pwd)",
         "pushd $(dirname %s)/%s" % (repos_build, path),
         "find . -name '*' -print | cpio -pavd $ROOT",
         "popd",
+        quiet = True,
     )
 
 overlaid_github_repository = repository_rule(

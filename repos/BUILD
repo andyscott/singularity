@@ -1,6 +1,7 @@
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 
 _universe_build_labels = [
+    "@com_chuusai_shapeless",
     "@com_github_mpilquist_simulacrum",
     "@com_github_mpilquist_simulacrum//:test_compile",
     "@org_scalacheck_scalacheck",
@@ -19,8 +20,9 @@ filegroup(
 )
 
 _universe_test_labels = [
+    "@com_chuusai_shapeless//:test",
     "@org_typelevel_macro_compat//:test",
-    "@org_scalamacros_paradise//:test",
+    #"@org_scalamacros_paradise//:test",
 ]
 
 test_suite(

@@ -2,6 +2,7 @@ load("@rules_scala_annex//rules:external.bzl", "scala_maven_import_external")
 load("//repos:rules.bzl", "overlaid_github_repository")
 
 def singularity_scala_repositories():
+    com_chuusai_shapeless_repository()
     com_github_mpilquist_simulacrum_repository()
     org_scalacheck_scalacheck_repository()
     org_scalamacros_paradise_repository()
@@ -12,6 +13,14 @@ def singularity_scala_repositories():
 
     scala_binary_dependencies_must_burn()
     java_binary_dependencies_might_burn()
+
+def com_chuusai_shapeless_repository():
+    overlaid_github_repository(
+        name = "com_chuusai_shapeless",
+        path = "com/chuusai/shapeless",
+        repo = "milessabin/shapeless",
+        sha = "1185bc22692bd5c085b158b732c931d1091c5c62",
+    )
 
 def com_github_mpilquist_simulacrum_repository():
     overlaid_github_repository(
