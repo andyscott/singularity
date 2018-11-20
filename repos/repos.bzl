@@ -8,6 +8,7 @@ def singularity_scala_repositories():
     org_scalacheck_scalacheck_repository()
     org_scalamacros_paradise_repository()
     org_scalatest_scalatest_repository()
+    org_spire_math_kind_projector_repository()
     org_typelevel_cats_repository()
     org_typelevel_machinist_repository()
     org_typelevel_macro_compat_repository()
@@ -63,6 +64,14 @@ def org_scalatest_scalatest_repository():
         sha = "78e506537ed06d4438e1d365e18c160d46d2bf18",
     )
 
+def org_spire_math_kind_projector_repository():
+    overlaid_github_repository(
+        name = "org_spire_math_kind_projector",
+        path = "org/spire_math/kind_projector",
+        repo = "non/kind-projector",
+        sha = "c956b9451c584d743a29247331be4d4b76ea5ccd",
+    )
+
 def org_typelevel_cats_repository():
     overlaid_github_repository(
         name = "org_typelevel_cats",
@@ -89,11 +98,6 @@ def org_typelevel_macro_compat_repository():
 
 # Everything in here should be burned away
 def scala_binary_dependencies_must_burn():
-    native.maven_jar(
-        name = "kind_projector_2_12",
-        artifact = "org.spire-math:kind-projector_2.12:0.9.6",
-    )
-
     native.maven_jar(
         name = "org_scala_lang_modules_scala_parser_combinators",
         artifact = "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1",

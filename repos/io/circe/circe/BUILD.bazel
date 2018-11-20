@@ -9,7 +9,7 @@ load(
     "make_srcjar",
 )
 
-_scalacopts = [
+_common_scalacopts = [
     "-deprecation",
     "-encoding",
     "UTF-8",
@@ -30,12 +30,13 @@ scala_library(
         "modules/generic/shared/src/main/scala/**/*.scala",
         "modules/generic/shared/src/main/scala-2.12-/**/*.scala",
     ]),
-    visibility = ["//visibility:public"],
+    scalacopts = _common_scalacopts,
     deps = [
         ":core",
         "@com_chuusai_shapeless",
     ],
     macro = True,
+    visibility = ["//visibility:public"],
 )
 
 scala_library(
@@ -43,6 +44,7 @@ scala_library(
     srcs = glob([
         "modules/shapes/shared/src/main/scala/**/*.scala",
     ]),
+    scalacopts = _common_scalacopts,
     visibility = ["//visibility:public"],
     deps = [
         ":core",
@@ -60,11 +62,12 @@ scala_library(
     ]) + [
         ":boilerplate",
     ],
-    visibility = ["//visibility:public"],
+    scalacopts = _common_scalacopts,
     deps = [
         ":numbers",
         "@org_typelevel_cats//:core",
     ],
+    visibility = ["//visibility:public"],
 )
 
 scala_library(
@@ -72,6 +75,7 @@ scala_library(
     srcs = glob([
         "modules/numbers/shared/src/main/scala/**/*.scala",
     ]),
+    scalacopts = _common_scalacopts,
     visibility = ["//visibility:public"],
 )
 

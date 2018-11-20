@@ -33,7 +33,7 @@ _cats_scalacopts = [
 ]
 
 _cats_plugins = [
-    "@kind_projector_2_12//jar",
+    "@org_spire_math_kind_projector",
     "@org_scalamacros_paradise",
 ]
 

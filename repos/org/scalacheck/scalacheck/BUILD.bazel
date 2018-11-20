@@ -8,7 +8,7 @@ load(
     "make_srcjar",
 )
 
-_scalacopts = [
+_common_scalacopts = [
     "-deprecation",
     "-encoding",
     "UTF-8",
@@ -34,7 +34,7 @@ scala_library(
         "src/main/scala/**/*.scala",
         "jvm/src/main/scala/**/*.scala",
     ]),
-    scalacopts = _scalacopts,
+    scalacopts = _common_scalacopts,
     visibility = ["//visibility:public"],
     deps = [
         "@scala_annex_org_scala_sbt_test_interface//jar",  # eep!

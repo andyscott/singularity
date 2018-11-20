@@ -10,6 +10,7 @@ _universe_build_labels = [
     "@org_scalacheck_scalacheck",
     "@org_scalamacros_paradise",
     "@org_scalatest_scalatest_src//:scalactic",
+    "@org_spire_math_kind_projector",
     "@org_typelevel_cats//:core",
     "@org_typelevel_cats//:kernel",
     "@org_typelevel_machinist",
@@ -24,6 +25,7 @@ filegroup(
 
 _universe_test_labels = [
     "@com_chuusai_shapeless//:test",
+    "@org_spire_math_kind_projector//:test",
     "@org_typelevel_macro_compat//:test",
     #"@org_scalamacros_paradise//:test",
 ]

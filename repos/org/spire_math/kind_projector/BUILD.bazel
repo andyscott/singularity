@@ -1,0 +1,58 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl", 
+    "scala_library",
+    "scala_test",
+)
+
+_common_scalacopts = [
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-feature",
+    "-language:higherKinds",
+    "-deprecation",
+    "-unchecked",
+]
+
+scala_library(
+    name = "org_spire_math_kind_projector",
+    srcs = glob([
+        "src/main/scala/**/*.scala",
+    ]),
+    resource_jars = [
+        ":resources"
+    ],
+    scalacopts = _common_scalacopts,
+    deps = [
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],    
+    visibility = ["//visibility:public"],
+)
+
+scala_test(
+    name = "test",
+    size = "small",
+    srcs = glob([
+        "src/test/scala/**/*.scala",
+    ]),
+    scalacopts = _common_scalacopts,
+    visibility = ["//visibility:public"],
+    deps = [
+        "@junit//jar",
+    ],
+    plugins = [
+        ":org_spire_math_kind_projector",
+    ],
+    runtime_deps = [
+        "@junit_interface//jar",
+        "@hamcrest_core//jar",
+    ],
+)
+
+java_binary(
+   name = "resources",
+   create_executable = False,
+   classpath_resources = [
+        "src/main/resources/scalac-plugin.xml"
+   ],
+)
