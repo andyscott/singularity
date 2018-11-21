@@ -137,6 +137,14 @@ alias(
     visibility = ["//visibility:public"],
 )
 
+test_suite(
+    name = "test_suite",
+    tests = [
+        ":scalactic_test",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 scala_library(
     name = "scalatest",
     srcs = _scalatest_srcjars + glob(
@@ -203,7 +211,6 @@ scala_test(
     srcs = _scalactic_test_srcjars + glob([
         "scalactic-test/src/test/scala/**/*.scala",
     ]),
-    visibility = ["//visibility:public"],
     deps = [
         ":common_test",
         ":scalactic",
@@ -240,7 +247,6 @@ scala_library(
         "common-test/src/main/scala/**/*.scala",
     ]),
     macro = True,
-    visibility = ["//visibility:public"],
     deps = [
         ":scalactic_macro",
         ":scalatest",

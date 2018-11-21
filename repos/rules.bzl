@@ -34,5 +34,8 @@ overlaid_github_repository = repository_rule(
         "sha": attr.string(),
         "path": attr.string(),
     },
+    environ = [
+        "__EVENT_HORIZON__",
+    ],
     implementation = _overlaid_github_repository_implementation,
 )

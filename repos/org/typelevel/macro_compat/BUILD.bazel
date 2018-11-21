@@ -17,8 +17,14 @@ _common_deps = [
     "@scala_scala_compiler//jar",
 ]
 
-scala_library(
+alias(
     name = "org_typelevel_macro_compat",
+    actual = ":core",
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "core",
     srcs = glob([
         "core/src/main/scala_2.11+/**/*.scala",
     ]),
@@ -41,6 +47,14 @@ scala_library(
     ],
 )
 
+test_suite(
+    name = "test_suite",
+    tests = [
+        ":test",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 scala_test(
     name = "test",
     size = "small",
@@ -48,10 +62,9 @@ scala_test(
         "test/src/test/scala/**/*.scala",
     ]),
     scalacopts = _common_scalacopts,
-    visibility = ["//visibility:public"],
     runtime_deps = [
-        "@junit_interface//jar",
         "@hamcrest_core//jar",
+        "@junit_interface//jar",
     ],
     deps = _common_deps + [
         ":test_src",

@@ -11,8 +11,14 @@ _scalacopts = [
     "-language:implicitConversions",
 ]
 
-scala_library(
+alias(
     name = "com_github_mpilquist_simulacrum",
+    actual = ":core",
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "core",
     srcs = glob([
         "core/src/main/scala/**/*.scala",
     ]),
@@ -27,6 +33,14 @@ scala_library(
     ],
 )
 
+test_suite(
+    name = "test_suite",
+    tests = [
+        ":test",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 scala_test(
     name = "test",
     srcs = glob([
@@ -36,7 +50,6 @@ scala_test(
         "@org_scalamacros_paradise",
     ],
     scalacopts = _scalacopts,
-    visibility = ["//visibility:public"],
     deps = [
         "@com_github_mpilquist_simulacrum",
         "@org_scalatest_scalatest",

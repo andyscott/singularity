@@ -1,5 +1,5 @@
 load(
-    "@rules_scala_annex//rules:scala.bzl", 
+    "@rules_scala_annex//rules:scala.bzl",
     "scala_library",
     "scala_test",
 )
@@ -19,13 +19,21 @@ scala_library(
         "src/main/scala/**/*.scala",
     ]),
     resource_jars = [
-        ":resources"
+        ":resources",
     ],
     scalacopts = _common_scalacopts,
+    visibility = ["//visibility:public"],
     deps = [
         "@scala_scala_compiler//jar",
         "@scala_scala_reflect//jar",
-    ],    
+    ],
+)
+
+test_suite(
+    name = "test_suite",
+    tests = [
+        ":test",
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -35,24 +43,23 @@ scala_test(
     srcs = glob([
         "src/test/scala/**/*.scala",
     ]),
-    scalacopts = _common_scalacopts,
-    visibility = ["//visibility:public"],
-    deps = [
-        "@junit//jar",
-    ],
     plugins = [
         ":org_spire_math_kind_projector",
     ],
+    scalacopts = _common_scalacopts,
     runtime_deps = [
-        "@junit_interface//jar",
         "@hamcrest_core//jar",
+        "@junit_interface//jar",
+    ],
+    deps = [
+        "@junit//jar",
     ],
 )
 
 java_binary(
-   name = "resources",
-   create_executable = False,
-   classpath_resources = [
-        "src/main/resources/scalac-plugin.xml"
-   ],
+    name = "resources",
+    classpath_resources = [
+        "src/main/resources/scalac-plugin.xml",
+    ],
+    create_executable = False,
 )

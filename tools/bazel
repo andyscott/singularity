@@ -6,4 +6,11 @@ mkdir -p "$WORKSPACE"/.bazel_cache
 
 "$WORKSPACE/tools/gen-ignores.sh" > /dev/null
 
+if stat -f "%m" "$BAZEL_REAL" >/dev/null 2>&1; then
+    timestamp=$(find "$WORKSPACE/repos" -print0 | xargs -0 stat -f "%m" | sort -n -r | head -n 1)
+else
+    timestamp=$(find "$WORKSPACE/repos" -print0 | xargs -0 stat -c "%Y" | sort -n -r | head -n 1)
+fi
+
+export __EVENT_HORIZON__=$timestamp
 exec "$BAZEL_REAL" $BAZEL_OPTS "$@"

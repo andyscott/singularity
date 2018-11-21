@@ -9,8 +9,14 @@ load(
     "make_srcjar",
 )
 
-scala_library(
+alias(
     name = "com_chuusai_shapeless",
+    actual = ":core",
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "core",
     srcs = glob([
         "core/src/main/scala/**/*.scala",
         "core/src/main/scala_2.11+/**/*.scala",
@@ -26,6 +32,14 @@ scala_library(
     ],
 )
 
+test_suite(
+    name = "test_suite",
+    tests = [
+        ":test",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 scala_test(
     name = "test",
     srcs = glob([
@@ -35,15 +49,14 @@ scala_test(
         "core/jvm/src/test/scala_2.11+/**/*.scala",
         "core/jvm/src/test/scala_2.13-/**/*.scala",
     ]),
+    runtime_deps = [
+        "@hamcrest_core//jar",
+        "@junit_interface//jar",
+    ],
     deps = [
         "@com_chuusai_shapeless",
         "@junit//jar",
     ],
-    runtime_deps = [
-        "@junit_interface//jar",
-        "@hamcrest_core//jar",
-    ],
-    visibility = ["//visibility:public"],
 )
 
 _sbt_shim_cmd = """

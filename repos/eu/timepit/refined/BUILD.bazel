@@ -1,0 +1,86 @@
+load(
+    "@rules_scala_annex//rules:scala.bzl",
+    "scala_library",
+    "scala_test",
+)
+
+_scalacopts = [
+    "-deprecation",
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:experimental.macros",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xfuture",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xlint:-unused,_",
+    #"-Ywarn-unused:imports",
+]
+
+test_suite(
+    name = "test_suite",
+    tests = [
+        ":core_test",
+        ":shapeless_test",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+scala_library(
+    name = "core",
+    srcs = glob([
+        "modules/core/shared/src/main/scala/**/*.scala",
+    ]),
+    macro = True,
+    scalacopts = _scalacopts,
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_chuusai_shapeless",
+        "@org_scala_lang_modules_scala_xml//jar",
+        "@scala_scala_compiler//jar",
+        "@scala_scala_reflect//jar",
+    ],
+)
+
+scala_test(
+    name = "core_test",
+    srcs = glob([
+        "modules/core/shared/src/test/scala/**/*.scala",
+        "modules/core/shared/src/test/scala-2.12/**/*.scala",
+        "modules/core/jvm/src/test/scala/**/*.scala",
+    ]),
+    scalacopts = _scalacopts,
+    deps = [
+        ":core",
+        "@org_scalacheck_scalacheck",
+    ],
+)
+
+scala_library(
+    name = "shapeless",
+    srcs = glob([
+        "modules/shapeless/shared/src/main/scala/**/*.scala",
+    ]),
+    macro = True,
+    scalacopts = _scalacopts,
+    visibility = ["//visibility:public"],
+    deps = [
+        ":core",
+    ],
+)
+
+scala_test(
+    name = "shapeless_test",
+    srcs = glob([
+        "modules/shapeless/shared/src/test/scala/**/*.scala",
+    ]),
+    scalacopts = _scalacopts,
+    deps = [
+        ":shapeless",
+        "@org_scalacheck_scalacheck",
+    ],
+)
