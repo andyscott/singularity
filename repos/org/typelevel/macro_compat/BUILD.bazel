@@ -18,7 +18,7 @@ _common_deps = [
 ]
 
 alias(
-    name = "org_typelevel_macro_compat",
+    name = repository_name()[1:],
     actual = ":core",
     visibility = ["//visibility:public"],
 )

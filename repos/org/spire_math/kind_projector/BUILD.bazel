@@ -13,8 +13,14 @@ _common_scalacopts = [
     "-unchecked",
 ]
 
+alias(
+    name = repository_name()[1:],
+    actual = ":plugin",
+    visibility = ["//visibility:public"],
+)
+
 scala_library(
-    name = "org_spire_math_kind_projector",
+    name = "plugin",
     srcs = glob([
         "src/main/scala/**/*.scala",
     ]),
@@ -44,7 +50,7 @@ scala_test(
         "src/test/scala/**/*.scala",
     ]),
     plugins = [
-        ":org_spire_math_kind_projector",
+        ":plugin",
     ],
     scalacopts = _common_scalacopts,
     runtime_deps = [

@@ -5,7 +5,7 @@ load(
 )
 
 alias(
-    name = "org_scalamacros_paradise",
+    name = repository_name()[1:],
     actual = ":plugin",
     visibility = ["//visibility:public"],
 )
@@ -41,7 +41,7 @@ scala_library(
     ]),
     macro = True,
     plugins = [
-        "@org_scalamacros_paradise",
+        ":plugin",
     ],
     deps = [
         "@scala_scala_compiler//jar",
@@ -62,7 +62,7 @@ scala_library(
         ],
     ),
     plugins = [
-        "@org_scalamacros_paradise",
+        ":plugin",
     ],
     visibility = ["//visibility:public"],
     deps = [

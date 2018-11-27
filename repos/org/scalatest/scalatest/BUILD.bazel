@@ -132,7 +132,7 @@ _common_test_srcjars = [":%s_%s" % (o, m) for (o, m, _) in _common_test_gens]
 _gens = _scalatest_gens + _scalactic_gens + _scalactic_macro_gens + _scalactic_test_gens + _common_test_gens
 
 alias(
-    name = "org_scalatest_scalatest",
+    name = repository_name()[1:],
     actual = ":scalatest",
     visibility = ["//visibility:public"],
 )

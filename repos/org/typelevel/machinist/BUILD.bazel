@@ -3,8 +3,14 @@ load(
     "scala_library",
 )
 
+alias(
+    name = repository_name()[1:],
+    actual = ":core",
+    visibility = ["//visibility:public"],
+)
+
 scala_library(
-    name = "org_typelevel_machinist",
+    name = "core",
     srcs = glob([
         "src/main/scala/**/*.scala",
     ]),
