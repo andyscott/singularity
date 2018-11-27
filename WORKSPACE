@@ -16,7 +16,7 @@ http_archive(
 
 git_repository(
     name = "rules_scala_annex",
-    commit = "508c0d51f2ea4ef7af7084e39f465e2faa3a9d1a",
+    commit = "7b6cad2d685df569ab0fa2f880f75c24540aeaca",
     remote = "git://github.com/andyscott/rules_scala_annex",
 )
 
