@@ -32,10 +32,31 @@ _cats_scalacopts = [
     "-Ypartial-unification",
 ]
 
-_cats_plugins = [
-    "@org_spire_math_kind_projector",
-    "@org_scalamacros_paradise",
-]
+# dirty hack due to bug in rules_scala
+java_binary(
+    name = "plugins_hack_0",
+    exports = [
+        "@org_spire_math_kind_projector",
+        "@org_scalamacros_paradise",
+    ],
+)
+
+java_binary(
+    name = "plugins_hack_1",
+    exports = [
+        "@org_spire_math_kind_projector",
+        "@org_scalamacros_paradise",
+    ],
+)
+
+java_binary(
+    name = "plugins_hack_2",
+    exports = [
+        "@org_spire_math_kind_projector",
+        "@org_scalamacros_paradise",
+    ],
+)
+
 
 scala_library(
     name = "kernel",
@@ -46,7 +67,7 @@ scala_library(
         ":kernel_boiler",
     ],
     macro = True,
-    plugins = _cats_plugins,
+    plugins = [":plugins_hack_0"],
     scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],
     deps = _cats_deps,
@@ -60,7 +81,7 @@ scala_library(
     ]) + [
         ":core_boiler",
     ],
-    plugins = _cats_plugins,
+    plugins = [":plugins_hack_1"]
     scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],
     exports = [
@@ -78,7 +99,7 @@ scala_library(
         "macros/src/main/scala/**/*.scala",
     ]),
     macro = True,
-    plugins = _cats_plugins,
+    plugins = [":plugins_hack_2"]
     scalacopts = _cats_scalacopts,
     visibility = ["//visibility:public"],
     deps = _cats_deps,

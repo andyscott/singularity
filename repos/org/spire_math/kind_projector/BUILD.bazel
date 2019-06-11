@@ -30,8 +30,8 @@ scala_library(
     scalacopts = _common_scalacopts,
     visibility = ["//visibility:public"],
     deps = [
-        "@scala_scala_compiler//jar",
-        "@scala_scala_reflect//jar",
+        "//external:scala_compiler",
+        "//external:scala_reflect",
     ],
 )
 

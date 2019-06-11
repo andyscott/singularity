@@ -1,16 +1,71 @@
-#!/bin/bash -e
-TOOLS="$(dirname "$0")"
-WORKSPACE="$TOOLS/.."
+#!/usr/bin/env bash
 
-mkdir -p "$WORKSPACE"/.bazel_cache
+bazel_version='0.25.2'
+darwin_sha='TODO'
+linux_sha='TODO'
 
-"$WORKSPACE/tools/gen-ignores.sh" > /dev/null
-
-if stat -f "%m" "$BAZEL_REAL" >/dev/null 2>&1; then
-    timestamp=$(find "$WORKSPACE/repos" -print0 | xargs -0 stat -f "%m" | sort -n -r | head -n 1)
-else
-    timestamp=$(find "$WORKSPACE/repos" -print0 | xargs -0 stat -c "%Y" | sort -n -r | head -n 1)
+if [ -z "$bazel" ]; then
+    bazel_bin_loc=~/.bazel_binaries
+    mkdir -p $bazel_bin_loc
+    bazel=$bazel_bin_loc/$bazel_version/bin/bazel-real
 fi
 
-export __EVENT_HORIZON__=$timestamp
-exec "$BAZEL_REAL" $BAZEL_OPTS "$@"
+if ! [ -f "$bazel" ]; then
+    case $(uname -s) in
+        Darwin)
+            platform='darwin'
+            sha=$darwin_sha
+            ;;
+        Linux)
+            platform='linux'
+            sha=$linux_sha
+            ;;
+        *)
+            echo 'Your OS is not supported.'
+            exit 1
+            ;;
+    esac
+    remote_source=https://github.com/bazelbuild/bazel/releases/download
+    installer_name="bazel-$bazel_version-installer-$platform-x86_64.sh"
+    url="$remote_source/$bazel_version/$installer_name"
+    (
+        tmp_dir=$(mktemp -d)
+        trap 'rm -rf $tmp_dir' EXIT
+        cd "$tmp_dir"
+        (>&2 echo "downloading installer from")
+        (>&2 echo "$url")
+        curl -o installer.sh -L "$url"
+        generated_sha=$(shasum -a 256 installer.sh | awk '{print $1}')
+        if [ "$generated_sha" != "$sha" ]; then
+            echo "Sha 256 does not match, expected: $sha"
+            echo "But found $generated_sha"
+            echo "Recommend you: update the sha to the expected"
+            echo "and then re-run this script"
+            exit 1
+        fi
+        chmod +x installer.sh
+        ./installer.sh --base=$bazel_bin_loc/"$bazel_version" --bin=$bazel_bin_loc/"$bazel_version"/bin_t
+    )
+fi
+
+extra_command_args=()
+workspace=$(cd "$(dirname "$0")"/..; pwd)
+disk_cache="$workspace"/.bazel_cache
+mkdir -p "$disk_cache"
+extra_command_args+=("--disk_cache=$disk_cache")
+
+for (( i=1; i<=$#; i++ ))
+do
+    case "${!i}" in
+        -*)
+            ;;
+        build|test|coverage)
+            n=$((i + 1))
+            set -- "${@:1:$i}" "${extra_command_args[@]}" "${@:$n}"
+            break
+            ;;
+    esac
+done
+
+(>&2 echo :: exec "$bazel" "$@")
+exec "$bazel" "$@"

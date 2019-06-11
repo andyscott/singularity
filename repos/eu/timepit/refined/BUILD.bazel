@@ -41,8 +41,8 @@ scala_library(
     deps = [
         "@com_chuusai_shapeless",
         "@org_scala_lang_modules_scala_xml//jar",
-        "@scala_scala_compiler//jar",
-        "@scala_scala_reflect//jar",
+        "//external:scala_compiler",
+        "//external:scala_reflect",
     ],
 )
 

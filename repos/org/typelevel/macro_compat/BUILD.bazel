@@ -13,8 +13,8 @@ _common_scalacopts = [
 ]
 
 _common_deps = [
-    "@scala_scala_reflect//jar",
-    "@scala_scala_compiler//jar",
+    "//external:scala_reflect",
+    "//external:scala_compiler",
 ]
 
 alias(

@@ -43,6 +43,6 @@ scala_library(
     scalacopts = _common_scalacopts,
     visibility = ["//visibility:public"],
     deps = [
-        "@scala_annex_org_scala_sbt_test_interface//jar",  # eep!
+        "//external:sbt_test_interface",  # eep!
     ],
 )

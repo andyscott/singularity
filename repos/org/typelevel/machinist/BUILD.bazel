@@ -17,7 +17,7 @@ scala_library(
     macro = True,
     visibility = ["//visibility:public"],
     deps = [
-        "@scala_scala_reflect//jar",
+        "//external:scala_reflect",
     ],
 )
 

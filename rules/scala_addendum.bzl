@@ -33,7 +33,7 @@ make_srcjar = rule(
             ),
             "data": attr.label_list(
                 allow_files = True,
-                cfg = "data",
+                cfg = "target",
             ),
         },
     ),
@@ -41,9 +41,5 @@ make_srcjar = rule(
     outputs = {
         "srcjar": "%{name}.srcjar",
     },
-    toolchains = [
-        "@rules_scala_annex//rules/scala:deps_toolchain_type",
-        "@rules_scala_annex//rules/scala:runner_toolchain_type",
-    ],
     implementation = _make_srcjar_implementation,
 )
